@@ -35,6 +35,7 @@
 #include <libvdeplug.h>
 #endif
 
+#define CONFIG_GNU_MCU_ECLIPSE
 #if defined(CONFIG_GNU_MCU_ECLIPSE)
 
 #include "qemu/thread.h"

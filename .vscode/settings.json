@@ -4,6 +4,9 @@
     "glib-compat.h": "c",
     "arm.h": "c",
     "svd.h": "c",
-    "cpu.h": "c"
+    "cpu.h": "c",
+    "glib.h": "c",
+    "console.h": "c",
+    "qemu-pixman.h": "c"
   }
 }
