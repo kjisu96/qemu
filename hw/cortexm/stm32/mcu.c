@@ -236,6 +236,21 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
         state->exti = DEVICE(exti);
     }
 
+
+    // ADC1; assume the presence in SVD is enough.
+    if (svd_has_named_peripheral(cm_state->svd_json, "ADC1")) {
+        // ADC1 will be named "/machine/mcu/stm32/ADC1".
+        // It is referred by the GPIOs, to forward interrupts, so
+        // it must be constructed before the GPIOs.
+        Object *adc1 = cm_object_new(state->container, "ADC1", TYPE_STM32_ADC);
+        // TYPE_STM32_ADC: stm32:adc-peripheral
+
+        cm_object_realize(adc1);
+
+        state->adc1 = DEVICE(adc1);
+    }
+
+
     state->num_gpio = 0;
 
     // The presence in SVD is maximal, must be validated by capabilities.

@@ -7,6 +7,8 @@
     "cpu.h": "c",
     "glib.h": "c",
     "console.h": "c",
-    "qemu-pixman.h": "c"
+    "qemu-pixman.h": "c",
+    "log.h": "c",
+    "peripheral-register.h": "c"
   }
 }
