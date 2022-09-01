@@ -265,12 +265,22 @@ static void stm32_adc_set_swstart_irqs(STM32ADCState *state, uint32_t old_cr2,
     Object *cr2 = state->u.f4.reg.cr2;
     uint32_t rst_value = new_cr2 & 0xBFFFFFFF;
 
+    // ADC1_SR register
+    Object *sr = state->u.f4.reg.sr;
+
     if (changed_out) {
         peripheral_register_write_value(dr, value[idx_adc_value]);
         printf("Write %x in ADC1_DR register \n", value[idx_adc_value]);
 
         tmp = peripheral_register_get_raw_value(dr);
         printf("Read %x from ADC1_DR register \n", tmp);
+
+
+        sleep(1);
+
+        // set ADC1_SR EOC bit
+        peripheral_register_or_raw_value(sr, 1<<1);
+
 
         idx_adc_value++;
         if( idx_adc_value == 6 ) {
