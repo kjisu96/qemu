@@ -163,6 +163,7 @@ static void systick_reload(CortexMNVICState *s, int reset)
     s->systick.tick += (s->systick.reload + 1) * systick_scale(s);
     timer_mod(s->systick.timer, s->systick.tick);
 
+    // 2022-11-15 jskwon 
     cnt++;
     printf("SysTick %d ms\n", cnt);
 }
