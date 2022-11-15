@@ -144,6 +144,8 @@ static inline int64_t systick_scale(CortexMNVICState *s)
     }
 }
 
+uint32_t cnt = 0;
+
 static void systick_reload(CortexMNVICState *s, int reset)
 {
     /* The Cortex-M3 Devices Generic User Guide says that "When the
@@ -160,6 +162,9 @@ static void systick_reload(CortexMNVICState *s, int reset)
     }
     s->systick.tick += (s->systick.reload + 1) * systick_scale(s);
     timer_mod(s->systick.timer, s->systick.tick);
+
+    cnt++;
+    printf("SysTick %d ms\n", cnt);
 }
 
 static void systick_timer_tick(void * opaque)
@@ -670,6 +675,8 @@ static void cortexm_nvic_realize_callback(DeviceState *dev, Error **errp)
      */
     memory_region_add_subregion(get_system_memory(), 0xe000e000, &s->container);
     s->systick.timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, systick_timer_tick, s);
+
+    printf("[INFO] NVIC SYSTICK TIMER \n");
 }
 
 static void cortexm_nvic_reset_callback(DeviceState *dev)

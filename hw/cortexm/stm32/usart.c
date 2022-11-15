@@ -1666,6 +1666,8 @@ static void stm32_usart_realize_callback(DeviceState *dev, Error **errp)
         }
     }
     state->chr = chr;
+
+    printf("[INFO] USART ENTER \n");
 }
 
 static void stm32_usart_reset_callback(DeviceState *dev)
