@@ -12080,7 +12080,7 @@
 						"description": "Regular data register",
 						"addressOffset": "0x4C",
 						"size": "0x20",
-						"access": "read-only",
+						"access": "read-write",
 						"resetValue": "0x00000000",
 						"fields": [
 							{

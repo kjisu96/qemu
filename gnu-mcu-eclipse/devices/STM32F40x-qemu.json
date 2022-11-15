@@ -60,6 +60,90 @@
 		"resetMask": "0xFFFFFFFF",
 		"peripherals": [
 			{
+				"name": "MA",
+				"description": "Micro-Accelerator",
+				"groupName": "MA",
+				"baseAddress": "0x40012400",
+				"addressBlocks": [
+					{
+						"offset": "0x0",
+						"size": "0x100",
+						"usage": "registers"
+					}
+				],
+				"registers": [
+					{
+						"name": "CR",
+						"displayName": "CR",
+						"description": "Control register",
+						"addressOffset": "0x0",
+						"size": "0x20",
+						"access": "read-write",
+						"resetValue": "0x00000000",
+						"fields": [
+							{
+								"name": "ACC_EN",
+								"description": "Enable Accelerator",
+								"bitOffset": "0",
+								"bitWidth": "32"
+							}
+						]
+					},
+					{
+						"name": "INPUT",
+						"displayName": "INPUT",
+						"description": "Input register",
+						"addressOffset": "0x4",
+						"size": "0x20",
+						"access": "read-write",
+						"resetValue": "0x00000000",
+						"fields": [
+							{
+								"name": "ACC_INPUT",
+								"description": "MA Inputs",
+								"bitOffset": "0",
+								"bitWidth": "32"
+							}
+						]
+					},
+					{
+						"name": "WEIGHT",
+						"displayName": "WEIGHT",
+						"description": "Weight register",
+						"addressOffset": "0x8",
+						"size": "0x20",
+						"access": "read-write",
+						"resetValue": "0x00000000",
+						"fields": [
+							{
+								"name": "ACC_WEIGHT",
+								"description": "MA Weights",
+								"bitOffset": "0",
+								"bitWidth": "32"
+							}
+						]
+					},
+					{
+						"name": "OUTPUT",
+						"displayName": "OUTPUT",
+						"description": "OUTPUT register",
+						"addressOffset": "0xC",
+						"size": "0x20",
+						"access": "read-write",
+						"resetValue": "0x00000000",
+						"fields": [
+							{
+								"name": "ACC_OUTPUT",
+								"description": "MA OUTPUT",
+								"bitOffset": "0",
+								"bitWidth": "32"
+							}
+						]
+					}
+				],
+				"qemuGroupName": "MA"
+			},
+			{
 				"name": "ADC1",
 				"description": "Analog-to-digital converter",
 				"groupName": "ADC",
