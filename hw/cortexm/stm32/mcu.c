@@ -250,6 +250,16 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
         state->adc1 = DEVICE(adc1);
     }
 
+    // MA; assume the presence in SVD is enough.
+    if (svd_has_named_peripheral(cm_state->svd_json, "MA")) {
+        Object *ma = cm_object_new(state->container, "MA", TYPE_STM32_MA);
+        // TYPE_STM32_ADC: stm32:adc-peripheral
+
+        cm_object_realize(ma);
+
+        state->ma = DEVICE(ma);
+    }    
+
 
     state->num_gpio = 0;
 

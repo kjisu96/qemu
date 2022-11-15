@@ -554,6 +554,8 @@ static const STM32Capabilities stm32f405xx = {
 
     .has_dac1 = true, /* 12-bit */
     .has_dac2 = true,
+
+    .has_ma   = true,
 /**/
 };
 

@@ -732,6 +732,8 @@ typedef struct {
     unsigned char num_dma;
     unsigned char num_comp;
 
+    unsigned int has_ma :1;
+
     // Number of backup bytes
     uint32_t num_back_bytes;
 

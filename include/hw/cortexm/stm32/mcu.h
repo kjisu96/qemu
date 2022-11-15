@@ -36,6 +36,8 @@
 
 #include <hw/cortexm/stm32/adc1.h>
 
+#include <hw/cortexm/stm32/ma.h>
+
 // ----------------------------------------------------------------------------
 
 #define TYPE_STM32_MCU "stm32-mcu"
@@ -100,6 +102,8 @@ typedef struct STM32MCUState {
     DeviceState *usart[STM32_MAX_USART];
 
     DeviceState *adc1;
+
+    DeviceState *ma;
 
 } STM32MCUState;
 
