@@ -38,6 +38,8 @@
 #include "sysemu/sysemu.h"
 #include "exec/gdbstub.h"
 
+#include <hw/cortexm/stm32/ma.h>
+
 /*
  * The interrupts numbering is a confusing issue. Cortex-M has 16 system
  * interrupts and a vendor specific number of peripheral interrupts
@@ -145,6 +147,7 @@ static inline int64_t systick_scale(CortexMNVICState *s)
 }
 
 uint32_t cnt = 0;
+// extern bool flag_acc_en;
 
 static void systick_reload(CortexMNVICState *s, int reset)
 {
@@ -158,14 +161,17 @@ static void systick_reload(CortexMNVICState *s, int reset)
     }
 
     if (reset) {
-        s->systick.tick = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+        s->systick.tick = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL_RT);
     }
     s->systick.tick += (s->systick.reload + 1) * systick_scale(s);
     timer_mod(s->systick.timer, s->systick.tick);
 
     // 2022-11-15 jskwon 
-    cnt++;
-    printf("SysTick %d ms\n", cnt);
+
+    // if( (peripheral_register_get_raw_value(ma_cr) & 0x2) == 0x2 ) {
+        cnt++;
+        printf("SysTick %d ms\n", cnt);
+    // }
 }
 
 static void systick_timer_tick(void * opaque)
