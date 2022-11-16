@@ -146,7 +146,7 @@ static inline int64_t systick_scale(CortexMNVICState *s)
     }
 }
 
-uint32_t cnt = 0;
+float cnt = 0.0;
 // extern bool flag_acc_en;
 
 static void systick_reload(CortexMNVICState *s, int reset)
@@ -161,7 +161,7 @@ static void systick_reload(CortexMNVICState *s, int reset)
     }
 
     if (reset) {
-        s->systick.tick = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL_RT);
+        s->systick.tick = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
     }
     s->systick.tick += (s->systick.reload + 1) * systick_scale(s);
     timer_mod(s->systick.timer, s->systick.tick);
@@ -169,8 +169,8 @@ static void systick_reload(CortexMNVICState *s, int reset)
     // 2022-11-15 jskwon 
 
     // if( (peripheral_register_get_raw_value(ma_cr) & 0x2) == 0x2 ) {
-        cnt++;
-        printf("SysTick %d ms\n", cnt);
+        cnt += 1;
+        printf("SysTick %f ms\n", cnt);
     // }
 }
 

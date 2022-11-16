@@ -133,19 +133,13 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
     FILE* fp_input;
     FILE* fp_weight;
     FILE* fp_receive;
-    fp_input = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/1_qemu_remote_cmd/params/input.d", "w");
-    fp_weight = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/1_qemu_remote_cmd/params/weight.d", "w");
-    fp_receive = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/1_qemu_remote_cmd/params/receive.d", "w");
+    FILE* fp_output;
+    fp_input = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/input.d", "w");
+    fp_weight = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/weight.d", "w");
+    fp_receive = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/receive.d", "w");
     
-
-    static uint8_t idx_ma_value = 0;
-
-    uint16_t value[6] = {
-        0xAAAA, 0xBBBB, 0xCCCC, 0xDDDD, 0xEEEE, 0xFFFF
-    };
-    uint16_t tmp;
-
-    uint8_t model, dmac, mem_r, mem_w;
+    
+    uint8_t model, dmac, mem_r, mem_w, stride;
     uint16_t w_col, w_row, i_col, i_row;
 
     // Compute pins that changed value.
@@ -160,46 +154,24 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
     // MA_WEIGHT register
     Object *ma_weight = state->u.f4.reg.ma_weight;
 
-    // MA_OUTPUT register
-    Object *ma_output = state->u.f4.reg.ma_output;
-
     // MA_CR register
     Object *ma_cr = state->u.f4.reg.ma_cr;
-    uint32_t rst_value = new_cr & 0xFFFFFFFE;
-
+    uint32_t rst_value = new_cr & 0x0;
 
     if (changed_out) {
-        // flag_acc_en = true;
 
-        peripheral_register_write_value(ma_output, value[idx_ma_value]);
-        printf("Write %x in MA_OUTPUT register \n", value[idx_ma_value]);
-
-        tmp = peripheral_register_get_raw_value(ma_output);
-        printf("Read %x from MA_OUTPUT register \n", tmp);
-
-        // sleep(1);
-
-        idx_ma_value++;
-        if( idx_ma_value == 6 ) {
-            idx_ma_value = 0;
-        }
-
-        // reset ADC1_CR2 SWSTART bit
-        peripheral_register_write_value(ma_cr, rst_value);
-        printf("=== MA_CR register %x --> %x \n", new_cr, rst_value);
-
-
-        model = (peripheral_register_get_raw_value(ma_cr) & 0x80000000) >> 32;
-        dmac  = (peripheral_register_get_raw_value(ma_cr) & 0x7F000000) >> 24;
-        mem_r = (peripheral_register_get_raw_value(ma_cr) & 0x00FF0000) >> 16;
-        mem_w = (peripheral_register_get_raw_value(ma_cr) & 0x0000FF00) >>  8;
+        model  = (peripheral_register_get_raw_value(ma_cr) & 0x80000000) >> 31;
+        dmac   = (peripheral_register_get_raw_value(ma_cr) & 0x7F000000) >> 24;
+        mem_r  = (peripheral_register_get_raw_value(ma_cr) & 0x00FF0000) >> 16;
+        mem_w  = (peripheral_register_get_raw_value(ma_cr) & 0x0000FF00) >>  8;
+        stride = (peripheral_register_get_raw_value(ma_cr) & 0x000000FE) >>  1;
         fprintf(fp_receive, "%d\n%d\n%d\n%d\n", dmac, mem_r, mem_w, model);
         if( model ) {   // CNN
             w_col = (peripheral_register_get_raw_value(ma_weight) & 0xFFFF0000) >> 16;
             w_row = (peripheral_register_get_raw_value(ma_weight) & 0x0000FFFF) >>  0;
             i_col = (peripheral_register_get_raw_value(ma_input ) & 0xFFFF0000) >> 16;
             i_row = (peripheral_register_get_raw_value(ma_input ) & 0x0000FFFF) >>  0;
-            fprintf(fp_receive, "%d\n%d\n%d\n%d\n", i_col, i_row, w_col, w_row);
+            fprintf(fp_receive, "%d\n%d\n%d\n%d\n%d\n", i_col, i_row, w_col, w_row, stride);
 
             for(int i = 0; i < i_col; i++) {
                 for(int j = 0; j < i_row; j++) {
@@ -224,6 +196,10 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
             }
             fprintf(fp_weight, "\n");
         }
+
+        // reset ADC1_CR2 SWSTART bit
+        peripheral_register_write_value(ma_cr, rst_value);
+        printf("=== MA_CR register %x --> %x \n", new_cr, rst_value);
     }
 
     fclose(fp_input);
@@ -231,8 +207,51 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
     fclose(fp_receive);
 
 
-    system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/1_qemu_remote_cmd/scripts/run_exp.exp");
+    system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/scripts/run_exp.exp");
 
+    // handle received output.d
+    fp_output = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/output.d", "r");
+
+
+    static int clk_sum = 0;
+    static int acc_en_cnt = 0;
+    int clk_temp;
+    if( model ) {   // CNN
+        int o_col = (i_col - w_col)/stride + 1;
+        int o_row = (i_row - w_row)/stride + 1;
+        for(int i = 0; i < o_col*o_row;i++) {
+            fscanf(fp_output, "%d\n", &clk_temp);
+        }
+        fscanf(fp_output, "%d\n", &clk_temp);
+        clk_sum += clk_temp;
+    } else {        // FC
+        for(int i = 0; i < w_col;i++) {
+            fscanf(fp_output, "%d\n", &clk_temp);
+        }
+        fscanf(fp_output, "%d\n", &clk_temp);
+        clk_sum += clk_temp;        
+    }
+    acc_en_cnt++;
+    printf("\n[CLOCK %d] %d\n", acc_en_cnt, clk_sum);
+
+    fclose(fp_output);
+
+}
+
+static void stm32f4_ma_output_post_read_callback(Object *reg, Object *periph,
+        uint32_t addr, uint32_t offset, unsigned size)
+{
+    STM32MAState *state = STM32_MA_STATE(periph);
+
+    Object *ma_output = state->u.f4.reg.ma_output;
+    assert(ma_output);
+
+    uint16_t output_value = (uint16_t)(rand()%100) + 1;
+
+    peripheral_register_write_value(ma_output, output_value);
+
+    // printf("=== Enter MA_OUTPUT Read Callback \n");
+    // printf("=== MA_OUTPUT register --> %lx \n", output_value);
 }
 
 
@@ -254,6 +273,7 @@ static void stm32f4_ma_cr_post_write_callback(Object *reg, Object *periph,
     stm32_ma_set_acc_en_irqs(state, prev_value, full_value);
 }
 
+/*
 static void stm32f4_ma_output_post_write_callback(Object *reg, Object *periph,
         uint32_t addr, uint32_t offset, unsigned size,
         peripheral_register_t value, peripheral_register_t full_value)
@@ -270,6 +290,7 @@ static void stm32f4_ma_output_post_write_callback(Object *reg, Object *periph,
 
     // 'value' may be have any size, use full_word.
 }
+*/
 
 
 
@@ -341,7 +362,9 @@ static void stm32_ma_realize_callback(DeviceState *dev, Error **errp)
             // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_ma_xxx_pret_read_callback);
             // peripheral_register_set_post_write(state->f4.reg.xxx, &stm32_ma_xxx_post_write_callback);
             peripheral_register_set_post_write(state->u.f4.reg.ma_cr, &stm32f4_ma_cr_post_write_callback);
-            peripheral_register_set_post_write(state->u.f4.reg.ma_output, &stm32f4_ma_output_post_write_callback);
+            // peripheral_register_set_post_write(state->u.f4.reg.ma_output, &stm32f4_ma_output_post_write_callback);
+
+            peripheral_register_set_post_read(state->u.f4.reg.ma_output, &stm32f4_ma_output_post_read_callback);
 
             // TODO: add interrupts.
 
