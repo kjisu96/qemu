@@ -130,17 +130,12 @@ static void stm32_ma_xxx_post_read_callback(Object *reg, Object *periph,
 static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
         uint32_t new_cr)
 {
-    FILE* fp_input;
-    FILE* fp_weight;
-    FILE* fp_receive;
-    FILE* fp_output;
-    fp_input = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/input.d", "w");
-    fp_weight = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/weight.d", "w");
-    fp_receive = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/receive.d", "w");
+
     
     
     uint8_t model, dmac, mem_r, mem_w, stride;
     uint16_t w_col, w_row, i_col, i_row;
+    bool issyn;
 
     // Compute pins that changed value.
     uint32_t changed = old_cr ^ new_cr;
@@ -149,17 +144,27 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
     // Bit 0: ACC_EN
     uint32_t changed_out = changed & (1<<0);
 
-    // MA_INPUT register
-    Object *ma_input = state->u.f4.reg.ma_input;
-    // MA_WEIGHT register
-    Object *ma_weight = state->u.f4.reg.ma_weight;
-
-    // MA_CR register
-    Object *ma_cr = state->u.f4.reg.ma_cr;
-    uint32_t rst_value = new_cr & 0x0;
-
     if (changed_out) {
 
+        FILE* fp_input;
+        FILE* fp_weight;
+        FILE* fp_receive;
+        FILE* fp_output;
+        fp_input = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/input.d", "w");
+        fp_weight = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/weight.d", "w");
+        fp_receive = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/receive.d", "w");
+
+
+        // MA_INPUT register
+        Object *ma_input = state->u.f4.reg.ma_input;
+        // MA_WEIGHT register
+        Object *ma_weight = state->u.f4.reg.ma_weight;
+
+        // MA_CR register
+        Object *ma_cr = state->u.f4.reg.ma_cr;
+        uint32_t rst_value = new_cr & 0x0;
+
+        issyn  = (peripheral_register_get_raw_value(ma_cr) & 0x40000000) >> 30;
         model  = (peripheral_register_get_raw_value(ma_cr) & 0x80000000) >> 31;
         dmac   = (peripheral_register_get_raw_value(ma_cr) & 0x7F000000) >> 24;
         mem_r  = (peripheral_register_get_raw_value(ma_cr) & 0x00FF0000) >> 16;
@@ -200,41 +205,51 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
         // reset ADC1_CR2 SWSTART bit
         peripheral_register_write_value(ma_cr, rst_value);
         printf("=== MA_CR register %x --> %x \n", new_cr, rst_value);
-    }
+        
 
-    fclose(fp_input);
-    fclose(fp_weight);
-    fclose(fp_receive);
-
-
-    system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/scripts/run_exp.exp");
-
-    // handle received output.d
-    fp_output = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_final/params/output.d", "r");
+        fclose(fp_input);
+        fclose(fp_weight);
+        fclose(fp_receive);
 
 
-    static int clk_sum = 0;
-    static int acc_en_cnt = 0;
-    int clk_temp;
-    if( model ) {   // CNN
-        int o_col = (i_col - w_col)/stride + 1;
-        int o_row = (i_row - w_row)/stride + 1;
-        for(int i = 0; i < o_col*o_row;i++) {
-            fscanf(fp_output, "%d\n", &clk_temp);
+        if( issyn )
+            system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/scripts/run_exp.exp syn");
+        else
+            system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/scripts/run_exp.exp");
+
+        // handle received output.d
+        fp_output = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/output.d", "r");
+
+
+        static int clk_sum = 0, area = 0;
+        static int acc_en_cnt = 0;
+        int temp;
+        if( model ) {   // CNN
+            int o_col = (i_col - w_col)/stride + 1;
+            int o_row = (i_row - w_row)/stride + 1;
+            for(int i = 0; i < o_col*o_row;i++) {
+                fscanf(fp_output, "%d\n", &temp);
+            }
+            fscanf(fp_output, "%d\n", &temp);
+            clk_sum += temp;
+        } else {        // FC
+            for(int i = 0; i < w_col;i++) {
+                fscanf(fp_output, "%d\n", &temp);
+            }
+            fscanf(fp_output, "%d\n", &temp);
+            clk_sum += temp;        
         }
-        fscanf(fp_output, "%d\n", &clk_temp);
-        clk_sum += clk_temp;
-    } else {        // FC
-        for(int i = 0; i < w_col;i++) {
-            fscanf(fp_output, "%d\n", &clk_temp);
+        if( issyn ) {
+            fscanf(fp_output, "%d\n", &temp);
+            area += temp;     
+            printf("\n[AREA] %d\n", area);
         }
-        fscanf(fp_output, "%d\n", &clk_temp);
-        clk_sum += clk_temp;        
-    }
-    acc_en_cnt++;
-    printf("\n[CLOCK %d] %d\n", acc_en_cnt, clk_sum);
+        acc_en_cnt++;
+        printf("\n[CLOCK %d] %d\n", acc_en_cnt, clk_sum);
 
-    fclose(fp_output);
+        fclose(fp_output);
+
+    }
 
 }
 
