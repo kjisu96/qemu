@@ -150,9 +150,9 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
         FILE* fp_weight;
         FILE* fp_receive;
         FILE* fp_output;
-        fp_input = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/input.d", "w");
-        fp_weight = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/weight.d", "w");
-        fp_receive = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/receive.d", "w");
+        fp_input = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_speech_final/params/input.d", "w");
+        fp_weight = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_speech_final/params/weight.d", "w");
+        fp_receive = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_speech_final/params/receive.d", "w");
 
 
         // MA_INPUT register
@@ -212,18 +212,16 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
         fclose(fp_receive);
 
 
-        if( issyn )
-            system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/scripts/run_exp.exp syn");
-        else
-            system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/scripts/run_exp.exp");
+        system("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_speech_final/scripts/run_exp.exp");
 
         // handle received output.d
-        fp_output = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_fc_final/params/output.d", "r");
+        fp_output = fopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/04_development/2022-11-04_MA_in_the_Loop_Framework/05_qemu_stm32_peri_add_test/2_qemu_speech_final/params/output.d", "r");
 
 
         static int clk_sum = 0, area = 0;
         static int acc_en_cnt = 0;
         int temp;
+        acc_en_cnt++;
         if( model ) {   // CNN
             int o_col = (i_col - w_col)/stride + 1;
             int o_row = (i_row - w_row)/stride + 1;
@@ -231,24 +229,23 @@ static void stm32_ma_set_acc_en_irqs(STM32MAState *state, uint32_t old_cr,
                 fscanf(fp_output, "%d\n", &temp);
             }
             fscanf(fp_output, "%d\n", &temp);
+            printf("\n[CLOCK %d] %d (delta: %d)\n", acc_en_cnt, clk_sum+temp, temp);
             clk_sum += temp;
         } else {        // FC
             for(int i = 0; i < w_col;i++) {
                 fscanf(fp_output, "%d\n", &temp);
             }
             fscanf(fp_output, "%d\n", &temp);
-            clk_sum += temp;        
+            printf("\n[CLOCK %d] %d (delta: %d)\n", acc_en_cnt, clk_sum+temp, temp);
+            clk_sum += temp;           
         }
         if( issyn ) {
             fscanf(fp_output, "%d\n", &temp);
             area += temp;     
             printf("\n[AREA] %d\n", area);
         }
-        acc_en_cnt++;
-        printf("\n[CLOCK %d] %d\n", acc_en_cnt, clk_sum);
-
+        
         fclose(fp_output);
-
     }
 
 }
