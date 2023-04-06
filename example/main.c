@@ -81,19 +81,19 @@ int main (void) {
     EXTI_FTSR       |= 0<<0; // falling edge trigger disable
     NVIC_ISER0      |= 1<<6; // enable EXTI0 interrupt
 
-	/* PORT D */
-	RCC_AHB1ENR  |= 1<<3;		                    // PORTD enable
-	GPIOD_MODER  |= 1<<24 | 1<<26 | 1<<28 | 1<<30;	// PD12,PD13,PD14,PD15 general output mode
-	GPIOD_OTYPER |= 0x00000000;                     // output push-pull
-	GPIOD_PUPDR	 |= 0x00000000;                     // no pull-up, pull-down
+    /* PORT D */
+    RCC_AHB1ENR  |= 1<<3;		                    // PORTD enable
+    GPIOD_MODER  |= 1<<24 | 1<<26 | 1<<28 | 1<<30;	// PD12,PD13,PD14,PD15 general output mode
+    GPIOD_OTYPER |= 0x00000000;                     // output push-pull
+    GPIOD_PUPDR	 |= 0x00000000;                     // no pull-up, pull-down
 
     //set_adc1();
     
-	while(1) {
+    while(1) {
         ADC1_SR = 0;
         ADC1_CR2 |= 1<<30;                  // [SWSTART] start conversion
-        while( !(ADC1_SR & 0x00000002) );   // [EOC] end of conversion
+//        while( !(ADC1_SR & 0x00000002) );   // [EOC] end of conversion
         value = ADC1_DR & 0xFFF;
-	}
+    }
 }
 
