@@ -22,7 +22,7 @@
       "problemMatcher": [],
       "presentation": {
         "showReuseMessage": false
-      }
+      } 
     },
     {
       "label": "qemu: clean",

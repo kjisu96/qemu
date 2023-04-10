@@ -536,7 +536,7 @@ static Property cortexm_mcu_properties[] = {
 /**/
 };
 
-static void cortexm_mcu_instance_init_callback(Object *obj)
+static void cortexm_mcu_instance_init_callback(Object *obj) 
 {
     qemu_log_function_name();
 

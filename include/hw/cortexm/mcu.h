@@ -127,7 +127,7 @@ typedef struct {
 } CortexMClass;
 
 // ----------------------------------------------------------------------------
-
+ 
 // Instance definitions.
 #define CORTEXM_MCU_STATE(obj) \
     OBJECT_CHECK(CortexMState, (obj), TYPE_CORTEXM_MCU)

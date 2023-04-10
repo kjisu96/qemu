@@ -3398,7 +3398,7 @@ int main(int argc, char **argv, char **envp)
 / /_/ / / /___/ /  / / /_/ /   | |/ / /_/ / / __/       \n\\
 \\___\\_\\/_____/_/  /_/\\____/    |___/\\____(_)____/  \n\\
     \n\n");                                                      
-    puts("AI-S2oC Lab. QEMU for ARM Peripheral v0.2\n\n");
+    puts("AI-S2oC Lab. QEMU for ARM Peripheral v0.2\n\n"); 
 
     qemu_init_cpu_list();
 	qemu_init_cpu_loop();

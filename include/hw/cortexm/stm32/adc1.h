@@ -146,7 +146,7 @@ typedef struct {
             Object *res; // [24:25] Resolution 
             Object *ovrie; // [26:26] Overrun interrupt enable  
           } cr1; 
-          
+           
           // CR2 (Control register 2) bitfields.
           struct { 
             Object *adon; // [0:0] A/D Converter ON / OFF 
