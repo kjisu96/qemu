@@ -239,7 +239,7 @@ static bool stm32_adc_is_enabled(Object *obj)
     return false;
 }
 */
-
+ 
 
 static void stm32_adc_set_swstart_irqs(STM32ADCState *state, uint32_t old_cr2,
         uint32_t new_cr2)
