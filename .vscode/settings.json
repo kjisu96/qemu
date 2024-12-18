@@ -10,5 +10,6 @@
     "qemu-pixman.h": "c",
     "log.h": "c",
     "peripheral-register.h": "c"
-  }
+  },
+  "makefile.configureOnOpen": false
 } 
