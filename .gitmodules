@@ -25,9 +25,6 @@
 [submodule "pixman"]
 	path = pixman
 	url = git://anongit.freedesktop.org/pixman
-[submodule "dtc"]
-	path = dtc
-	url = https://github.com/qemu/dtc.git
 [submodule "roms/u-boot"]
 	path = roms/u-boot
 	url = git://git.qemu-project.org/u-boot.git
