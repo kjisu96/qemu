@@ -261,7 +261,7 @@ static void stm32_adc_set_swstart_irqs(STM32ADCState *state, uint32_t old_cr2,
     // ADC1_DR register
     Object *dr = state->u.f4.reg.dr;
 
-    // ADC1_CR2 register
+    // ADC1_CR2 register 
     Object *cr2 = state->u.f4.reg.cr2;
     uint32_t rst_value = new_cr2 & 0xBFFFFFFF;
 
