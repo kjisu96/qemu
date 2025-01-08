@@ -9,7 +9,8 @@
     "console.h": "c",
     "qemu-pixman.h": "c",
     "log.h": "c",
-    "peripheral-register.h": "c"
+    "peripheral-register.h": "c",
+    "sysemu.h": "c"
   },
   "makefile.configureOnOpen": false
 } 

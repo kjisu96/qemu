@@ -1,5 +1,5 @@
 /*
- * STM32 - MA (Analog-to-digital converter) emulation.
+ * STM32 - MA (Micro-Accelerator) emulation.
  *
  * Copyright (c) 2016 Liviu Ionescu.
  *

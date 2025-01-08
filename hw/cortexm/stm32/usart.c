@@ -1627,6 +1627,12 @@ static void stm32_usart_realize_callback(DeviceState *dev, Error **errp)
             break;
 
         case STM32_PORT_USART2:
+            // jskwon
+            snprintf(enabling_bit_name, sizeof(enabling_bit_name) - 1,
+            DEVICE_PATH_STM32_RCC "/APB1ENR/USART%dEN",
+                    1 + state->port_index - STM32_PORT_USART1);
+            break;
+
         case STM32_PORT_USART3:
 
             // UART_4, UART_5:
