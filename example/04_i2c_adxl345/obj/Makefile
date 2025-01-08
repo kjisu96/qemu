@@ -10,7 +10,7 @@ LINKERSCRIPT	= LinkerScript
 STARTUP			= startup
 
 INCDIR	= -I../inc
-INCDIR	+= -I../../CMSIS/Core/Include
+INCDIR	+= -I../../CMSIS_5/CMSIS/Core/Include
 INCDIR	+= -I../hw/inc
 
 LDDIR	= -T../${LINKERSCRIPT}.ld

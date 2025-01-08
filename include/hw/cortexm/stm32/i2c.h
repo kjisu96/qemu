@@ -204,6 +204,10 @@ typedef struct {
 
 } STM32I2CState;
 
+// jskwon
+Object* stm32_i2c_create(Object *parent, stm32_i2c_index_t index);
+
+
 // ----------------------------------------------------------------------------
 
 #endif /* STM32_I2C_H_ */

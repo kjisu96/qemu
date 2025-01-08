@@ -30,6 +30,7 @@
                 "${env:HOME}/Work/qemu-arm-dev/linux-x64/build/libs/glib-2.56.4/glib",
                 "${env:HOME}/Work/qemu-arm-dev/linux-x64/install/libs/include",
                 "${env:HOME}/Work/qemu-arm-dev/linux-x64/sources/qemu-2.8.0-15-legacy.git/include",
+                "${env:HOME}/Work/qemu-arm-dev/linux-x64/sources/qemu-2.8.0-15-legacy.git/target-arm",
                 "${env:HOME}/Work/qemu-arm-dev/linux-x64/install/libs/include/pixman-1"
             ],
             "defines": [],

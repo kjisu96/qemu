@@ -52,8 +52,10 @@ typedef enum {
     STM32_FAMILY_L4,
 } stm32_family_t;
 
+// jskwon
 #define STM32_MAX_GPIO  (8)
 #define STM32_MAX_USART (6)
+#define STM32_MAX_I2C (3)
 
 typedef enum {
     STM32F051XX_WWDG_IRQn = 0, /*!< Window WatchDog Interrupt                               */

@@ -10,7 +10,9 @@
     "qemu-pixman.h": "c",
     "log.h": "c",
     "peripheral-register.h": "c",
-    "sysemu.h": "c"
+    "sysemu.h": "c",
+    "mcu.h": "c",
+    "gpio.h": "c"
   },
   "makefile.configureOnOpen": false
 } 

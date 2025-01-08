@@ -11,7 +11,7 @@ obj-$(CONFIG_STM32) += usart.o
 obj-$(CONFIG_STM32) += exti.o
 
 obj-$(CONFIG_STM32) += adc1.o 
-obj-$(CONFIG_STM32) += ma.o
+obj-$(CONFIG_STM32) += i2c.o
 
 obj-$(CONFIG_STM32) += syscfg.o
 obj-$(CONFIG_STM32) += afio.o

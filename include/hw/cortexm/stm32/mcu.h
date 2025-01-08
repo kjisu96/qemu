@@ -34,9 +34,10 @@
 #include <hw/cortexm/stm32/afio.h>
 #include <hw/cortexm/parson.h>
 
+// jskwon
 #include <hw/cortexm/stm32/adc1.h>
-
-#include <hw/cortexm/stm32/ma.h>
+#include <hw/cortexm/stm32/i2c.h>
+// #include <hw/cortexm/stm32/ma.h>
 
 // ----------------------------------------------------------------------------
 
@@ -103,7 +104,7 @@ typedef struct STM32MCUState {
 
     DeviceState *adc1;
 
-    DeviceState *ma;
+    DeviceState *i2c[STM32_MAX_I2C];
 
 } STM32MCUState;
 

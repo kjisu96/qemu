@@ -118,3 +118,6 @@ docker-src.*
 common.env
 .project
 *.orig
+
+example/**/*.o
+example/**/*.d

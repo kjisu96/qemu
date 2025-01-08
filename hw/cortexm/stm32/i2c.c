@@ -17,7 +17,7 @@
  * with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <hw/cortexm/stm32/i2c1.h>
+#include <hw/cortexm/stm32/i2c.h>
 #include <hw/cortexm/stm32/mcu.h>
 #include <hw/cortexm/helper.h>
 #include <hw/cortexm/svd.h>
@@ -178,6 +178,28 @@ static void stm32_i2c_xxx_post_read_callback(Object *reg, Object *periph,
 
 // ----------------------------------------------------------------------------
 
+// jskwon
+Object* stm32_i2c_create(Object *parent, stm32_i2c_index_t index)
+{
+    if ((int) index >= STM32_PORT_I2C_UNDEFINED) {
+        hw_error("Cannot assign I2C %d: QEMU supports only %d ports\n",
+                1 + index - STM32_PORT_I2C1, STM32_PORT_I2C_UNDEFINED);
+    }
+
+    char child_name[10];
+    snprintf(child_name, sizeof(child_name) - 1, "I2C%d",
+            1 + index - STM32_PORT_I2C1);
+    // Passing a local string is ok.
+    Object *i2c = cm_object_new(parent, child_name,
+    TYPE_STM32_I2C);
+
+    object_property_set_int(i2c, index, "port-index", NULL);
+
+    cm_object_realize(i2c);
+
+    return i2c;
+}
+
 // TODO: remove this if the peripheral is always enabled.
 static bool stm32_i2c_is_enabled(Object *obj)
 {
@@ -231,7 +253,10 @@ static void stm32_i2c_realize_callback(DeviceState *dev, Error **errp)
 
     Object *obj = OBJECT(dev);
 
-    const char *periph_name = "I2C1";
+    // const char *periph_name = "I2C1";
+    char periph_name[10];
+    snprintf(periph_name, sizeof(periph_name) - 1, "I2C%d",
+            1 + state->port_index - STM32_PORT_I2C1);    
 
     svd_set_peripheral_address_block(cm_state->svd_json, periph_name, obj);
     peripheral_create_memory_region(obj);
@@ -265,7 +290,7 @@ static void stm32_i2c_realize_callback(DeviceState *dev, Error **errp)
 
            // TODO: remove this if the peripheral is always enabled.
            snprintf(enabling_bit_name, sizeof(enabling_bit_name) - 1,
-                DEVICE_PATH_STM32_RCC "/AHB1ENR/I2C%dEN",
+                DEVICE_PATH_STM32_RCC "/APB1ENR/I2C%dEN",
                 1 + state->port_index - STM32_PORT_I2C1);
 
 
@@ -284,6 +309,8 @@ static void stm32_i2c_realize_callback(DeviceState *dev, Error **errp)
     state->enabling_bit = OBJECT(cm_device_by_name(enabling_bit_name));
 
     peripheral_prepare_registers(obj);
+
+    printf("[INFO] I2C ENTER \n");
 }
 
 static void stm32_i2c_reset_callback(DeviceState *dev)

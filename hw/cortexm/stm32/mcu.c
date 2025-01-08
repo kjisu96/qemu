@@ -48,6 +48,14 @@ static void create_usart(STM32MCUState *state, stm32_usart_index_t index)
     state->usart[index] = DEVICE(stm32_usart_create(state->container, index));
 }
 
+// jskwon
+// Create children I2C nodes.
+// Public names are "/machine/stm32/I2C%d".
+static void create_i2c(STM32MCUState *state, stm32_i2c_index_t index)
+{
+    state->i2c[index] = DEVICE(stm32_i2c_create(state->container, index));
+}
+
 // Constructor for all STM32 devices, based on capabilities.
 //
 // Alias the flash memory to 0x08000000.
@@ -250,17 +258,6 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
         state->adc1 = DEVICE(adc1);
     }
 
-    // MA; assume the presence in SVD is enough.
-    if (svd_has_named_peripheral(cm_state->svd_json, "MA")) {
-        Object *ma = cm_object_new(state->container, "MA", TYPE_STM32_MA);
-        // TYPE_STM32_ADC: stm32:adc-peripheral
-
-        cm_object_realize(ma);
-
-        state->ma = DEVICE(ma);
-    }    
-
-
     state->num_gpio = 0;
 
     // The presence in SVD is maximal, must be validated by capabilities.
@@ -394,6 +391,24 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
 
     // TODO: add more devices.
 
+    // jskwon
+/*
+    // MA; assume the presence in SVD is enough.
+    if (svd_has_named_peripheral(cm_state->svd_json, "I2C")) {
+        Object *ma = cm_object_new(state->container, "MA", TYPE_STM32_MA);
+        // TYPE_STM32_ADC: stm32:adc-peripheral
+
+        cm_object_realize(ma);
+
+        state->ma = DEVICE(ma);
+    }   
+*/    
+    // jskwon
+    // I2C1
+    if (capabilities->has_i2c1
+            && svd_has_named_peripheral(cm_state->svd_json, "I2C1")) {
+        create_i2c(state, STM32_PORT_I2C1);
+    }
 }
 
 static int stm32_mcu_reset_object(Object *obj, void *opaque)
