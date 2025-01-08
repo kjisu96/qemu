@@ -31,3 +31,6 @@
 [submodule "roms/skiboot"]
 	path = roms/skiboot
 	url = git://git.qemu.org/skiboot.git
+[submodule "example/CMSIS_5"]
+	path = example/CMSIS_5
+	url = https://github.com/ARM-software/CMSIS_5.git
