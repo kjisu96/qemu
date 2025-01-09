@@ -22,6 +22,17 @@
 #include <hw/cortexm/helper.h>
 #include <hw/cortexm/svd.h>
 
+#define I2C_SR1_SB      (1 << 0)
+#define I2C_SR1_ADDR    (1 << 1)
+#define I2C_SR1_BTF     (1 << 2)
+#define I2C_SR1_ADD10   (1 << 3)
+#define I2C_SR1_STOPF   (1 << 4)
+#define I2C_SR1_RXNE    (1 << 6)
+#define I2C_SR1_TXE     (1 << 7)
+
+#define I2C_SR2_BUSY    (1 << 1)
+
+
 // ----- Generated code -------------------------------------------------------
 //
 // ----- 8< ----- 8< -----  8< ----- 8< ----- 8< ----- 8< ----- 8< -----
@@ -176,6 +187,45 @@ static void stm32_i2c_xxx_post_read_callback(Object *reg, Object *periph,
 }
 #endif
 
+
+static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
+        Object *periph, uint32_t addr, uint32_t offset, unsigned size)
+{
+    STM32I2CState *state = STM32_I2C_STATE(periph);
+
+    peripheral_register_t value = 0;
+
+    // Add code to get the value from the producer, and return it.
+    uint32_t sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+    if ( 1 ) {
+        return sr1 | I2C_SR1_SB | I2C_SR1_ADDR | I2C_SR1_BTF | I2C_SR1_RXNE;
+        // return sr1;
+    }    
+
+
+    // This value, possibly masked, will be stored in the register
+    // and returned when the register is read.
+    return value;
+}
+
+static peripheral_register_t stm32_i2c_sr2_pre_read_callback(Object *reg,
+        Object *periph, uint32_t addr, uint32_t offset, unsigned size)
+{
+    STM32I2CState *state = STM32_I2C_STATE(periph);
+    peripheral_register_t value = 0;
+
+    // Add code to get the value from the producer, and return it.
+    uint32_t sr2 = peripheral_register_get_raw_value(state->u.f4.reg.sr2);
+    if ( 1 ) {
+        return sr2 | I2C_SR2_BUSY;
+        // return sr2;
+    }    
+
+    // This value, possibly masked, will be stored in the register
+    // and returned when the register is read.
+    return value;
+}
+
 // ----------------------------------------------------------------------------
 
 // jskwon
@@ -280,11 +330,29 @@ static void stm32_i2c_realize_callback(DeviceState *dev, Error **errp)
             // cm_object_property_set_str(state->u.f4.fld.xxx.fff, "GGG", "follows");
             // cm_object_property_set_str(state->u.f4.fld.xxx.fff, "GGG", "cleared-by");
 
+
+            // state->u.f4.reg.ccr;
+            // state->u.f4.reg.cr1;
+            // state->u.f4.reg.cr2;
+            // state->u.f4.reg.dr;
+            // state->u.f4.reg.oar1;
+            // state->u.f4.reg.oar2;
+            // state->u.f4.reg.sr1;
+            // state->u.f4.reg.sr2;
+            // state->u.f4.reg.trise;
+
+
+
             // TODO: add callbacks.
             // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_i2c_xxx_pre_read_callback);
             // peripheral_register_set_post_read(state->f4.reg.xxx, &stm32_i2c_xxx_post_read_callback);
             // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_i2c_xxx_pret_read_callback);
             // peripheral_register_set_post_write(state->f4.reg.xxx, &stm32_i2c_xxx_post_write_callback);
+            peripheral_register_set_pre_read(state->u.f4.reg.sr1,
+                &stm32_i2c_sr1_pre_read_callback);
+            peripheral_register_set_pre_read(state->u.f4.reg.sr2,
+                &stm32_i2c_sr2_pre_read_callback);                
+               
 
             // TODO: add interrupts.
 

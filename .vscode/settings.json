@@ -12,7 +12,8 @@
     "peripheral-register.h": "c",
     "sysemu.h": "c",
     "mcu.h": "c",
-    "gpio.h": "c"
+    "gpio.h": "c",
+    "usart.h": "c"
   },
   "makefile.configureOnOpen": false
 } 

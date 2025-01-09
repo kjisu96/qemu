@@ -121,3 +121,5 @@ common.env
 
 example/**/*.o
 example/**/*.d
+example/**/.gdb_history
+**/*.swp
