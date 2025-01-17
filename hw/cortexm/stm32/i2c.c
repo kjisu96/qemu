@@ -22,6 +22,8 @@
 #include <hw/cortexm/helper.h>
 #include <hw/cortexm/svd.h>
 
+#define DEBUG
+
 #define I2C_SR1_SB      (1 << 0)
 #define I2C_SR1_ADDR    (1 << 1)
 #define I2C_SR1_BTF     (1 << 2)
@@ -31,6 +33,10 @@
 #define I2C_SR1_TXE     (1 << 7)
 
 #define I2C_SR2_BUSY    (1 << 1)
+
+#define I2C_CR1_PE      (1 << 0)
+#define I2C_CR1_START   (1 << 8)
+#define I2C_CR1_STOP    (1 << 9)
 
 
 // ----- Generated code -------------------------------------------------------
@@ -187,6 +193,131 @@ static void stm32_i2c_xxx_post_read_callback(Object *reg, Object *periph,
 }
 #endif
 
+i2c_fsm_t i2c_fsm = ST_IDLE;
+
+static void stm32_i2c_dr_post_write_callback(Object *reg, Object *periph,
+        uint32_t addr, uint32_t offset, unsigned size,
+        peripheral_register_t value, peripheral_register_t full_value)
+{
+    STM32I2CState *state = STM32_I2C_STATE(periph);
+
+    peripheral_register_t prev_value = peripheral_register_get_raw_prev_value(reg);
+    // The new register value is full_value, the old one is prev_value.
+
+#ifdef DEBUG
+    puts("\n\n[DBG] stm32_i2c_dr_post_write_callback ");
+#endif  
+
+    sleep(1);
+    switch( i2c_fsm ) {
+        case ST_START:
+            if( full_value != 0 ) {
+                printf("[INFO] I2C Device Address = 0x%2X \n", full_value>>1);
+                printf("[INFO] Next state is ST_DEV_ADDR \n");
+                i2c_fsm = ST_DEV_ADDR;
+            }
+            break;
+        case ST_DEV_ADDR:
+            if( full_value != 0 ) {
+                printf("[INFO] I2C Register = 0x%2X \n", full_value);
+                printf("[INFO] Next state is ST_REG_ADDR \n");
+                i2c_fsm = ST_REG_ADDR;
+            }  
+            break;
+        case ST_REG_ADDR:
+            if( full_value != 0 ) {
+                printf("[INFO] I2C Write Data = 0x%2X \n", full_value);
+                printf("[INFO] Next state is ST_WR_DATA \n");
+                i2c_fsm = ST_WR_DATA;
+            }        
+            break;            
+        default:
+            break;
+    }
+
+}
+
+static void stm32_i2c_cr1_post_write_callback(Object *reg, Object *periph,
+        uint32_t addr, uint32_t offset, unsigned size,
+        peripheral_register_t value, peripheral_register_t full_value)
+{
+    STM32I2CState *state = STM32_I2C_STATE(periph);
+
+    peripheral_register_t prev_value = peripheral_register_get_raw_prev_value(reg);
+    // The new register value is full_value, the old one is prev_value.
+
+#ifdef DEBUG
+    puts("\n\n[DBG] stm32_i2c_cr1_post_write_callback ");
+#endif  
+
+    sleep(1);
+    switch( i2c_fsm ) {
+        case ST_IDLE:
+            if( full_value & I2C_CR1_START ) {
+                peripheral_register_or_raw_value(state->u.f4.reg.sr1, I2C_SR1_SB);
+                uint32_t sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+                printf("[DBG] write I2C_SR1_SB = 0x%08x \n", sr1);
+
+                printf("[INFO] Next state is ST_START \n");
+                i2c_fsm = ST_START;
+            }
+            break;
+        case ST_START:
+            break;
+        default:
+            break;
+    }
+
+}
+
+static void stm32_i2c_sr1_post_read_callback(Object *reg, Object *periph,
+        uint32_t addr, uint32_t offset, unsigned size)
+{
+    STM32I2CState *state = STM32_I2C_STATE(periph);
+
+    peripheral_register_t value = peripheral_register_get_raw_value(reg);
+
+    uint32_t sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+
+#ifdef DEBUG
+    puts("\n\n[DBG] stm32_i2c_sr1_post_read_callback ");
+#endif 
+
+    // TODO: add code to perform the post read actions, like clearing some bits.
+    sleep(1);
+    switch( i2c_fsm ) {
+        case ST_START:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr1, ~I2C_SR1_SB);
+            sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+#ifdef DEBUG
+            printf("[DBG] clear I2C_SR1_SB = 0x%08x \n", sr1);
+#endif               
+            break;
+        case ST_DEV_ADDR:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr1, ~I2C_SR1_ADDR);
+#ifdef DEBUG
+            sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+            printf("[DBG] clear I2C_SR1_ADDR = 0x%08x \n", sr1);
+#endif               
+            break;        
+        case ST_REG_ADDR:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr1, ~I2C_SR1_BTF);
+#ifdef DEBUG
+            sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+            printf("[DBG] clear I2C_SR1_BTF = 0x%08x \n", sr1);
+#endif               
+            break;      
+        case ST_WR_DATA:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr1, ~I2C_SR1_BTF);
+#ifdef DEBUG
+            sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
+            printf("[DBG] clear I2C_SR1_BTF = 0x%08x \n", sr1);
+#endif               
+            break;                         
+        default:
+            break;
+    }
+}
 
 static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
         Object *periph, uint32_t addr, uint32_t offset, unsigned size)
@@ -197,15 +328,120 @@ static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
 
     // Add code to get the value from the producer, and return it.
     uint32_t sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
-    if ( 1 ) {
-        return sr1 | I2C_SR1_SB | I2C_SR1_ADDR | I2C_SR1_BTF | I2C_SR1_RXNE;
-        // return sr1;
-    }    
+    uint32_t cr1 = peripheral_register_get_raw_value(state->u.f4.reg.cr1);
+    uint32_t dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+
+#ifdef DEBUG
+    puts("\n\n[DBG] stm32_i2c_sr1_pre_read_callback ");
+    // printf("[DBG] I2C_SR1  = 0x%08x \n", sr1);
+    // printf("[DBG] I2C_CR1  = 0x%08x \n", cr1);
+    // printf("[DBG] I2C_DR  = 0x%08x \n", dr);
+    // printf("[DBG] i2c_fsm = %d \n", i2c_fsm);
+#endif    
+
+
+    // jskwon
+    switch( i2c_fsm ) {
+        case ST_START:
+#ifdef DEBUG
+            printf("[DBG] Current state is ST_START \n");
+            printf("[DBG] I2C_CR1 = 0x%08x \n", cr1);
+#endif
+            if( cr1 & I2C_CR1_START ) {
+
+                /*
+                    Sensor API
+                    -> genStart();
+                */
+                sleep(1);
+
+                peripheral_register_and_raw_value(state->u.f4.reg.cr1, ~I2C_CR1_START);
+#ifdef DEBUG
+                cr1 = peripheral_register_get_raw_value(state->u.f4.reg.cr1);
+                printf("[DBG] clear I2C_CR1_START = 0x%08x \n", cr1);
+#endif 
+                return sr1;
+            }
+            break;
+        case ST_DEV_ADDR:
+#ifdef DEBUG
+            printf("[DBG] Current state is ST_DEV_ADDR \n");
+            printf("[DBG] I2C_DR  = 0x%08x \n", dr);
+#endif
+            if( (dr != 0) ) {
+                printf("[INFO] I2C Device Address = 0x%2X \n", dr>>1);
+                
+                /*
+                    Sensor API
+                    -> devAddr();
+                */
+                sleep(1);
+
+                // if I2C_DR is not empty -> clear
+                peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
+#ifdef DEBUG
+                dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+                printf("[DBG] clear I2C_DR = 0x%08x \n", dr);
+#endif
+                return sr1 | I2C_SR1_ADDR;
+            }
+            break;
+        case ST_REG_ADDR:
+#ifdef DEBUG
+            printf("[DBG] Current state is ST_REG_ADDR \n");
+            printf("[DBG] I2C_DR  = 0x%08x \n", dr);
+#endif
+            if( (dr != 0) ) {
+                printf("[INFO] I2C Register = 0x%2X \n", dr);
+                
+                /*
+                    Sensor API
+                    -> regAddr();
+                */
+                sleep(1);
+
+                // if I2C_DR is not empty -> clear
+                peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
+#ifdef DEBUG
+                dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+                printf("[DBG] clear I2C_DR = 0x%08x \n", dr);
+#endif
+                return sr1 | I2C_SR1_BTF;
+            }
+            break;
+        case ST_WR_DATA:
+#ifdef DEBUG
+            printf("[DBG] Current state is ST_WR_DATA \n");
+            printf("[DBG] I2C_DR  = 0x%08x \n", dr);
+#endif
+            if( (dr != 0) ) {
+                printf("[INFO] I2C Write Data = 0x%2X \n", dr);
+                
+                /*
+                    Sensor API
+                    -> setReg();
+                */
+                sleep(1);
+
+                // if I2C_DR is not empty -> clear
+                peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
+#ifdef DEBUG
+                dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+                printf("[DBG] clear I2C_DR = 0x%08x \n", dr);
+#endif
+                return sr1 | I2C_SR1_BTF;
+            }
+            break;
+        case ST_NACK:
+            break;
+        default:
+            break;
+    }
 
 
     // This value, possibly masked, will be stored in the register
     // and returned when the register is read.
-    return value;
+    return sr1;
 }
 
 static peripheral_register_t stm32_i2c_sr2_pre_read_callback(Object *reg,
@@ -347,9 +583,14 @@ static void stm32_i2c_realize_callback(DeviceState *dev, Error **errp)
             // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_i2c_xxx_pre_read_callback);
             // peripheral_register_set_post_read(state->f4.reg.xxx, &stm32_i2c_xxx_post_read_callback);
             // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_i2c_xxx_pret_read_callback);
-            // peripheral_register_set_post_write(state->f4.reg.xxx, &stm32_i2c_xxx_post_write_callback);
-            peripheral_register_set_pre_read(state->u.f4.reg.sr1,
-                &stm32_i2c_sr1_pre_read_callback);
+            peripheral_register_set_post_write(state->u.f4.reg.cr1, &stm32_i2c_cr1_post_write_callback);
+            peripheral_register_set_post_write(state->u.f4.reg.dr, &stm32_i2c_dr_post_write_callback);
+
+
+
+            peripheral_register_set_pre_read(state->u.f4.reg.sr1, &stm32_i2c_sr1_pre_read_callback);
+            peripheral_register_set_post_read(state->u.f4.reg.sr1, &stm32_i2c_sr1_post_read_callback);
+
             peripheral_register_set_pre_read(state->u.f4.reg.sr2,
                 &stm32_i2c_sr2_pre_read_callback);                
                

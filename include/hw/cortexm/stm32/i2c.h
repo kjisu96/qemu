@@ -208,6 +208,20 @@ typedef struct {
 Object* stm32_i2c_create(Object *parent, stm32_i2c_index_t index);
 
 
+typedef enum {
+    ST_IDLE,
+    ST_START,
+    ST_DEV_ADDR,
+    ST_REG_ADDR,
+    ST_DMY_STOP,
+    ST_DMY_START,
+    ST_WR_DATA,
+    ST_RD_DATA,
+    ST_STOP,
+    ST_NACK = 0xFF,
+} i2c_fsm_t;
+
+
 // ----------------------------------------------------------------------------
 
 #endif /* STM32_I2C_H_ */
