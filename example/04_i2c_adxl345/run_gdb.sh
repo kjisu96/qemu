@@ -9,6 +9,7 @@ gdb-multiarch \
     -s "./bin/out.elf" \
 	-ex "load" \
 	-ex "b main.c:80" \
+	-ex "b i2c.c:40" \
 	-ex "set arc arm" \
     -ex "monitor system_reset" \
     -ex "continue" \

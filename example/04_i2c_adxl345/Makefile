@@ -17,5 +17,8 @@ qemu:
 		--gdb tcp::3333 --image $(OUT_DIR)/out.elf \
 		--verbose --verbose #-nographic
 
-gdb:
+gdb_qemu:
+	./run_gdb_qemu.sh
+
+gdb_elf:
 	./run_gdb.sh

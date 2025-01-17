@@ -43,9 +43,10 @@ void set_i2c1() {
     // In SM mode maximum allowed SCL rise time is 1000ns
     // For TPCLK1 = 100ns => (1000ns / 100ns) + 1= 10 + 1 = 11
     I2C1->TRISE |= (11 << 0); // program TRISE to 11 for 100khz
+
     // set own address to 00 - not really used in master mode
-    I2C1->OAR1 |= (0x00 << 1);
-    I2C1->OAR1 |= (1 << 14); // bit 14 should be kept at 1 according to the datasheet
+    //I2C1->OAR1 |= (0x00 << 1);
+    //I2C1->OAR1 |= (1 << 14); // bit 14 should be kept at 1 according to the datasheet
 
     // enable error interrupt from NVIC
     NVIC_SetPriority(I2C1_ER_IRQn, 1);

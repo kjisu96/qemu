@@ -78,6 +78,9 @@ int main (void) {
     }
 
     GPIOD->ODR |= 1<<12; 
+    GPIOD->ODR |= 1<<13; 
+    GPIOD->ODR |= 1<<14; 
+    GPIOD->ODR |= 1<<15; 
 
     /*******************
       ***   SET UP   ***
@@ -148,38 +151,37 @@ int main (void) {
     //i2c_write(DeviceAddr, 0x20, 0xFE);
 
     while(1) {
+/*        
         index++;
 
-        /*
-        sprintf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                i2c_read(DeviceAddr, 0x1D),
-                i2c_read(DeviceAddr, 0x1E),
-                i2c_read(DeviceAddr, 0x1F),
-                i2c_read(DeviceAddr, 0x20),
-                i2c_read(DeviceAddr, 0x21),
-                i2c_read(DeviceAddr, 0x22),
-                i2c_read(DeviceAddr, 0x23),
-                i2c_read(DeviceAddr, 0x24),
-                i2c_read(DeviceAddr, 0x25),
-                i2c_read(DeviceAddr, 0x26),
-                i2c_read(DeviceAddr, 0x27),
-                i2c_read(DeviceAddr, 0x28),
-                i2c_read(DeviceAddr, 0x29),
-                i2c_read(DeviceAddr, 0x2A),
-                i2c_read(DeviceAddr, 0x2B),
-                i2c_read(DeviceAddr, 0x2C),
-                i2c_read(DeviceAddr, 0x2D),
-                i2c_read(DeviceAddr, 0x2E),
-                i2c_read(DeviceAddr, 0x2F),
-                i2c_read(DeviceAddr, 0x30),
-                i2c_read(DeviceAddr, 0x31));
-
-        for(int i = 0; i < (int)strlen(buf); i++) {
-            USART2->DR = buf[i];
-            while( !(USART2->SR &(1<<7)) );      // Transmit data register empty?
-            while( !(USART2->SR &(1<<6)) );      // Transmission complete?
-        }
-        */
+//        sprintf(buf, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+//                i2c_read(DeviceAddr, 0x1D),
+//                i2c_read(DeviceAddr, 0x1E),
+//                i2c_read(DeviceAddr, 0x1F),
+//                i2c_read(DeviceAddr, 0x20),
+//                i2c_read(DeviceAddr, 0x21),
+//                i2c_read(DeviceAddr, 0x22),
+//                i2c_read(DeviceAddr, 0x23),
+//                i2c_read(DeviceAddr, 0x24),
+//                i2c_read(DeviceAddr, 0x25),
+//                i2c_read(DeviceAddr, 0x26),
+//                i2c_read(DeviceAddr, 0x27),
+//                i2c_read(DeviceAddr, 0x28),
+//                i2c_read(DeviceAddr, 0x29),
+//                i2c_read(DeviceAddr, 0x2A),
+//                i2c_read(DeviceAddr, 0x2B),
+//                i2c_read(DeviceAddr, 0x2C),
+//                i2c_read(DeviceAddr, 0x2D),
+//                i2c_read(DeviceAddr, 0x2E),
+//                i2c_read(DeviceAddr, 0x2F),
+//                i2c_read(DeviceAddr, 0x30),
+//                i2c_read(DeviceAddr, 0x31));
+//
+//        for(int i = 0; i < (int)strlen(buf); i++) {
+//            USART2->DR = buf[i];
+//            while( !(USART2->SR &(1<<7)) );      // Transmit data register empty?
+//            while( !(USART2->SR &(1<<6)) );      // Transmission complete?
+//        }
 
 
 
@@ -205,6 +207,8 @@ int main (void) {
 
         //for(int i = 0; i < 100000; i++) {};
         GPIOD->ODR ^= 1<<13;     // 1 LED ON
+
+*/        
     }
 
     return 0;
