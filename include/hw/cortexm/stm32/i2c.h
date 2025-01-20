@@ -213,13 +213,16 @@ typedef enum {
     ST_START,
     ST_DEV_ADDR,
     ST_REG_ADDR,
-    ST_DMY_STOP,
-    ST_DMY_START,
     ST_WR_DATA,
     ST_RD_DATA,
     ST_STOP,
     ST_NACK = 0xFF,
 } i2c_fsm_t;
+
+typedef enum {
+    OP_WRITE = 0,  
+    OP_READ = 1,
+} i2c_op_t;
 
 
 // ----------------------------------------------------------------------------

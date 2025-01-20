@@ -8,8 +8,7 @@ gdb-multiarch \
     -ex "target remote :3333" \
     -s "./bin/out.elf" \
 	-ex "load" \
-	-ex "b main.c:48" \
-	-ex "b main.c:55" \
+	-ex "b main.c:62" \
 	-ex "set arc arm" \
     -ex "monitor system_reset" \
     -ex "continue" \

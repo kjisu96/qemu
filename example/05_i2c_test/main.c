@@ -52,17 +52,17 @@ int main (void) {
     GPIOD->ODR |= 1<<12; 
     GPIOD->ODR |= 1<<13; 
     GPIOD->ODR |= 1<<14; 
-    GPIOD->ODR |= 1<<15; 
+//    GPIOD->ODR |= 1<<15; 
 
     i2c_write(DeviceAddr, 0x38, 0x80);
 
     GPIOD->ODR ^= 1<<12; 
     GPIOD->ODR ^= 1<<13; 
     GPIOD->ODR ^= 1<<14; 
-    GPIOD->ODR ^= 1<<15; 
+//    GPIOD->ODR ^= 1<<15; 
 
     uint8_t x_low  = i2c_read(DeviceAddr, 0x32);
-
+    if( x_low == 'a' ) GPIOD->ODR |= 1<<15;
 
     while(1) {
     }

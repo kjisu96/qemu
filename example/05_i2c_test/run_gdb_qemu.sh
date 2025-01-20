@@ -1,8 +1,7 @@
 #!/bin/bash
 
 gdb /home/jskwon/Work/qemu-arm-dev/linux-x64/install/qemu-arm/bin/qemu-system-gnuarmeclipse \
-	-ex "b i2c.c:250" \
-	-ex "b i2c.c:255" \
+	-ex "b i2c.c:205" \
 	-ex "run -cpu cortex-m4 -machine STM32F4-Discovery --gdb tcp::3333 --image ./bin/out.elf --verbose --verbose" 
 
 

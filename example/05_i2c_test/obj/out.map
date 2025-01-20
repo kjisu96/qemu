@@ -164,7 +164,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x34 uart.o
  .debug_macro   0x0000000000000000    0x15d08 uart.o
  .debug_line    0x0000000000000000      0x15d uart.o
- .debug_str     0x0000000000000000    0x860e8 uart.o
+ .debug_str     0x0000000000000000    0x860e5 uart.o
  .comment       0x0000000000000000       0x5a uart.o
  .debug_frame   0x0000000000000000       0x30 uart.o
  .ARM.attributes
@@ -383,95 +383,95 @@ LOAD /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtn.o
                 0x0000000008000000                g_pfnVectors
                 0x0000000008000188                . = ALIGN (0x4)
 
-.text           0x0000000008000188      0x568
+.text           0x0000000008000188      0x538
                 0x0000000008000188                . = ALIGN (0x4)
  *(.text)
  .text          0x0000000008000188       0x88 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.text*)
  .text.clk      0x0000000008000210       0xc8 main.o
                 0x0000000008000210                clk
- .text.main     0x00000000080002d8       0xc4 main.o
+ .text.main     0x00000000080002d8       0xbc main.o
                 0x00000000080002d8                main
  .text.__NVIC_EnableIRQ
-                0x000000000800039c       0x3c i2c.o
+                0x0000000008000394       0x3c i2c.o
  .text.__NVIC_SetPriority
-                0x00000000080003d8       0x54 i2c.o
+                0x00000000080003d0       0x54 i2c.o
  .text.set_i2c1
-                0x000000000800042c       0xe4 i2c.o
-                0x000000000800042c                set_i2c1
+                0x0000000008000424       0xe4 i2c.o
+                0x0000000008000424                set_i2c1
  .text.i2c_write
-                0x0000000008000510       0x9c i2c.o
-                0x0000000008000510                i2c_write
+                0x0000000008000508       0x98 i2c.o
+                0x0000000008000508                i2c_write
  .text.i2c_read
-                0x00000000080005ac       0xec i2c.o
-                0x00000000080005ac                i2c_read
+                0x00000000080005a0       0xc8 i2c.o
+                0x00000000080005a0                i2c_read
  .text.Reset_Handler
-                0x0000000008000698       0x40 startup.o
-                0x0000000008000698                Reset_Handler
+                0x0000000008000668       0x40 startup.o
+                0x0000000008000668                Reset_Handler
  *(.glue_7)
- .glue_7        0x00000000080006d8        0x0 linker stubs
+ .glue_7        0x00000000080006a8        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x00000000080006d8        0x0 linker stubs
+ .glue_7t       0x00000000080006a8        0x0 linker stubs
  *(.eh_frame)
- .eh_frame      0x00000000080006d8        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .eh_frame      0x00000000080006a8        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.init)
- .init          0x00000000080006d8        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crti.o
-                0x00000000080006d8                _init
- .init          0x00000000080006dc        0x8 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtn.o
+ .init          0x00000000080006a8        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crti.o
+                0x00000000080006a8                _init
+ .init          0x00000000080006ac        0x8 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtn.o
  *(.fini)
- .fini          0x00000000080006e4        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crti.o
-                0x00000000080006e4                _fini
- .fini          0x00000000080006e8        0x8 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtn.o
-                0x00000000080006f0                . = ALIGN (0x4)
-                0x00000000080006f0                _etext = .
+ .fini          0x00000000080006b4        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crti.o
+                0x00000000080006b4                _fini
+ .fini          0x00000000080006b8        0x8 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtn.o
+                0x00000000080006c0                . = ALIGN (0x4)
+                0x00000000080006c0                _etext = .
 
-.vfp11_veneer   0x00000000080006f0        0x0
- .vfp11_veneer  0x00000000080006f0        0x0 linker stubs
+.vfp11_veneer   0x00000000080006c0        0x0
+ .vfp11_veneer  0x00000000080006c0        0x0 linker stubs
 
-.v4_bx          0x00000000080006f0        0x0
- .v4_bx         0x00000000080006f0        0x0 linker stubs
+.v4_bx          0x00000000080006c0        0x0
+ .v4_bx         0x00000000080006c0        0x0 linker stubs
 
-.iplt           0x00000000080006f0        0x0
- .iplt          0x00000000080006f0        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
+.iplt           0x00000000080006c0        0x0
+ .iplt          0x00000000080006c0        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.rel.dyn        0x00000000080006f0        0x0
- .rel.iplt      0x00000000080006f0        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
+.rel.dyn        0x00000000080006c0        0x0
+ .rel.iplt      0x00000000080006c0        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.rodata         0x00000000080006f0        0x0
-                0x00000000080006f0                . = ALIGN (0x4)
+.rodata         0x00000000080006c0        0x0
+                0x00000000080006c0                . = ALIGN (0x4)
  *(.rodata)
  *(.rodata*)
-                0x00000000080006f0                . = ALIGN (0x4)
+                0x00000000080006c0                . = ALIGN (0x4)
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x00000000080006f0        0x0
-                0x00000000080006f0                __exidx_start = .
+.ARM            0x00000000080006c0        0x0
+                0x00000000080006c0                __exidx_start = .
  *(.ARM.exidx*)
-                0x00000000080006f0                __exidx_end = .
+                0x00000000080006c0                __exidx_end = .
 
-.preinit_array  0x00000000080006f0        0x0
-                0x00000000080006f0                PROVIDE (__preinit_array_start = .)
+.preinit_array  0x00000000080006c0        0x0
+                0x00000000080006c0                PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x00000000080006f0                PROVIDE (__preinit_array_end = .)
+                0x00000000080006c0                PROVIDE (__preinit_array_end = .)
 
-.init_array     0x00000000080006f0        0x4
-                0x00000000080006f0                PROVIDE (__init_array_start = .)
+.init_array     0x00000000080006c0        0x4
+                0x00000000080006c0                PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x00000000080006f0        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
-                0x00000000080006f4                PROVIDE (__init_array_end = .)
+ .init_array    0x00000000080006c0        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
+                0x00000000080006c4                PROVIDE (__init_array_end = .)
 
-.fini_array     0x00000000080006f4        0x4
-                0x00000000080006f4                PROVIDE (__fini_array_start = .)
+.fini_array     0x00000000080006c4        0x4
+                0x00000000080006c4                PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x00000000080006f4        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
-                0x00000000080006f8                PROVIDE (__fini_array_end = .)
-                0x00000000080006f8                _sidata = LOADADDR (.data)
+ .fini_array    0x00000000080006c4        0x4 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
+                0x00000000080006c8                PROVIDE (__fini_array_end = .)
+                0x00000000080006c8                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000        0x4 load address 0x00000000080006f8
+.data           0x0000000020000000        0x4 load address 0x00000000080006c8
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -481,19 +481,19 @@ LOAD /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtn.o
                 0x0000000020000004                . = ALIGN (0x4)
  *fill*         0x0000000020000001        0x3 
                 0x0000000020000004                _edata = .
-                0x00000000080006fc                _siccmram = LOADADDR (.ccmram)
+                0x00000000080006cc                _siccmram = LOADADDR (.ccmram)
 
 .tm_clone_table
-                0x0000000020000004        0x0 load address 0x00000000080006fc
+                0x0000000020000004        0x0 load address 0x00000000080006cc
  .tm_clone_table
                 0x0000000020000004        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
  .tm_clone_table
                 0x0000000020000004        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtend.o
 
-.igot.plt       0x0000000020000004        0x0 load address 0x00000000080006fc
+.igot.plt       0x0000000020000004        0x0 load address 0x00000000080006cc
  .igot.plt      0x0000000020000004        0x0 /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/crtbegin.o
 
-.ccmram         0x0000000010000000        0x0 load address 0x00000000080006fc
+.ccmram         0x0000000010000000        0x0 load address 0x00000000080006cc
                 0x0000000010000000                . = ALIGN (0x4)
                 0x0000000010000000                _sccmram = .
  *(.ccmram)
@@ -625,9 +625,9 @@ LOAD /usr/lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/libgcc.a
  .debug_macro   0x0000000000018e4e       0x35 main.o
  .debug_macro   0x0000000000018e83       0x92 i2c.o
 
-.debug_line     0x0000000000000000      0x7b9
- .debug_line    0x0000000000000000      0x3d8 main.o
- .debug_line    0x00000000000003d8      0x3e1 i2c.o
+.debug_line     0x0000000000000000      0x792
+ .debug_line    0x0000000000000000      0x3e0 main.o
+ .debug_line    0x00000000000003e0      0x3b2 i2c.o
 
 .debug_str      0x0000000000000000    0x8a659
  .debug_str     0x0000000000000000    0x8a088 main.o
