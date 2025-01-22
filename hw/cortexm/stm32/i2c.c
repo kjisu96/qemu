@@ -578,6 +578,10 @@ static peripheral_register_t stm32_i2c_sr2_pre_read_callback(Object *reg,
             printf("[DBG] I2C_CR1 = 0x%08x \n", cr1);
 #endif
             if( cr1 & I2C_CR1_STOP ) {
+                /*
+                    Sensor API
+                    -> genStop();
+                */
                 sleep(I2C_SLEEP_DELAY);
 
                 peripheral_register_and_raw_value(state->u.f4.reg.cr1, ~I2C_CR1_STOP);
