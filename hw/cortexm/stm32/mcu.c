@@ -34,6 +34,31 @@
 
 // ----- Private --------------------------------------------------------------
 
+/*
+pthread_t gui_thread;
+
+void* gui_thread_kernel(void *arg)
+{
+    // void *handle = dlopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/02_research_note/2025/2025-01-02_QT6/02_SRC/00_qt6_gui_prj/build/libgui_v0_1_so.so", RTLD_LAZY);
+    // if (!handle) {
+    //     fprintf(stderr, "Error: %s\n", dlerror());
+    //     return 1;
+    // }
+
+    // void (*my_function)();
+    // *(void **)(&my_function) = dlsym(handle, "main");
+    // char *error = dlerror();
+    // if (error != NULL) {
+    //     fprintf(stderr, "Error: %s\n", error);
+    //     dlclose(handle);
+    // }
+    // my_function();
+    // dlclose(handle);
+
+    pthread_exit(NULL);
+}
+*/
+
 // Create children GPIO nodes.
 // Public names are "/machine/stm32/GPIO%c".
 static void create_gpio(STM32MCUState *state, stm32_gpio_index_t index)
@@ -409,6 +434,27 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
             && svd_has_named_peripheral(cm_state->svd_json, "I2C1")) {
         create_i2c(state, STM32_PORT_I2C1);
     }
+
+
+
+/*
+    //jskwon
+    // - generate thread for qt6 gui
+
+    int rc;
+
+    fprintf(stdout, "[INFO] creating thread \n");
+    rc = pthread_create(&gui_thread, NULL, gui_thread_kernel, NULL);
+    if (rc) {
+        fprintf(stderr, "Error: return code from pthread_create() is %d\n", rc);
+        exit(1);
+    }
+    
+
+    // pthread_join(gui_thread, NULL);
+*/
+
+
 }
 
 static int stm32_mcu_reset_object(Object *obj, void *opaque)

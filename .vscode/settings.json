@@ -13,7 +13,12 @@
     "sysemu.h": "c",
     "mcu.h": "c",
     "gpio.h": "c",
-    "usart.h": "c"
+    "usart.h": "c",
+    "i2c.h": "c",
+    "helper.h": "c",
+    "peripheral.h": "c",
+    "capabilities.h": "c",
+    "dlfcn.h": "c"
   },
   "makefile.configureOnOpen": false
 } 

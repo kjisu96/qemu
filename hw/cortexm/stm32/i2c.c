@@ -24,7 +24,8 @@
 
 #define DEBUG
 
-#define I2C_SLEEP_DELAY 0
+//                       sec   msec   usec
+#define I2C_SLEEP_mDELAY 0.5 * 1000 * 1000
 
 #define I2C_SR1_SB      (1 << 0)
 #define I2C_SR1_ADDR    (1 << 1)
@@ -229,7 +230,7 @@ static void stm32_i2c_dr_post_write_callback(Object *reg, Object *periph,
     puts("\n\n[DBG] stm32_i2c_dr_post_write_callback ");
 #endif  
 
-    sleep(I2C_SLEEP_DELAY);
+    usleep(I2C_SLEEP_mDELAY);
     switch( i2c_fsm ) {
         case ST_START:
             if( full_value != 0 ) {
@@ -273,7 +274,7 @@ static void stm32_i2c_cr1_post_write_callback(Object *reg, Object *periph,
 
     uint32_t sr1 = peripheral_register_get_raw_value(state->u.f4.reg.sr1);
 
-    sleep(I2C_SLEEP_DELAY);
+    usleep(I2C_SLEEP_mDELAY);
     switch( i2c_fsm ) {
         case ST_IDLE:
             if( full_value & I2C_CR1_START ) {
@@ -330,7 +331,7 @@ static void stm32_i2c_sr1_post_read_callback(Object *reg, Object *periph,
 #endif 
 
     // TODO: add code to perform the post read actions, like clearing some bits.
-    sleep(I2C_SLEEP_DELAY);
+    usleep(I2C_SLEEP_mDELAY);
     switch( i2c_fsm ) {
         case ST_START:
             peripheral_register_and_raw_value(state->u.f4.reg.sr1, ~I2C_SR1_SB);
@@ -410,7 +411,7 @@ static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
                     Sensor API
                     -> genStart();
                 */
-                sleep(I2C_SLEEP_DELAY);
+                usleep(I2C_SLEEP_mDELAY);
 
                 peripheral_register_and_raw_value(state->u.f4.reg.cr1, ~I2C_CR1_START);
 #ifdef DEBUG
@@ -440,7 +441,7 @@ static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
                     Sensor API
                     -> devAddr();
                 */
-                sleep(I2C_SLEEP_DELAY);
+                usleep(I2C_SLEEP_mDELAY);
 
                 // if I2C_DR is not empty -> clear
                 peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
@@ -463,7 +464,7 @@ static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
                     Sensor API
                     -> regAddr();
                 */
-                sleep(I2C_SLEEP_DELAY);
+                usleep(I2C_SLEEP_mDELAY);
 
                 // if I2C_DR is not empty -> clear
                 peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
@@ -486,7 +487,7 @@ static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
                     Sensor API
                     -> setReg();
                 */
-                sleep(I2C_SLEEP_DELAY);
+                usleep(I2C_SLEEP_mDELAY);
 
                 // if I2C_DR is not empty -> clear
                 peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
@@ -510,7 +511,7 @@ static peripheral_register_t stm32_i2c_sr1_pre_read_callback(Object *reg,
                 printf("[DBG] Received I2C_DR = 0x%08x \n", dr);
 #endif
 
-                sleep(I2C_SLEEP_DELAY);
+                usleep(I2C_SLEEP_mDELAY);
                 return sr1 | I2C_SR1_RXNE;
             }        
             break;
@@ -535,7 +536,7 @@ static void stm32_i2c_sr2_post_read_callback(Object *reg, Object *periph,
 #endif 
     uint32_t sr2 = peripheral_register_get_raw_value(state->u.f4.reg.sr2);
 
-    sleep(I2C_SLEEP_DELAY);
+    usleep(I2C_SLEEP_mDELAY);
     switch( i2c_fsm ) {
         case ST_STOP:
             peripheral_register_and_raw_value(state->u.f4.reg.sr2, ~I2C_SR2_BUSY);
@@ -582,7 +583,7 @@ static peripheral_register_t stm32_i2c_sr2_pre_read_callback(Object *reg,
                     Sensor API
                     -> genStop();
                 */
-                sleep(I2C_SLEEP_DELAY);
+                usleep(I2C_SLEEP_mDELAY);
 
                 peripheral_register_and_raw_value(state->u.f4.reg.cr1, ~I2C_CR1_STOP);
 #ifdef DEBUG
@@ -744,10 +745,34 @@ static void stm32_i2c_realize_callback(DeviceState *dev, Error **errp)
 
             // TODO: add interrupts.
 
-           // TODO: remove this if the peripheral is always enabled.
-           snprintf(enabling_bit_name, sizeof(enabling_bit_name) - 1,
+            // TODO: remove this if the peripheral is always enabled.
+            snprintf(enabling_bit_name, sizeof(enabling_bit_name) - 1,
                 DEVICE_PATH_STM32_RCC "/APB1ENR/I2C%dEN",
                 1 + state->port_index - STM32_PORT_I2C1);
+
+
+
+
+
+
+            // void *handle = dlopen("/home/jskwon/HDD/PROJECT/2018-09-08_JSKWON/02_research_note/2025/2025-01-02_QT6/02_SRC/02_open_qt6_dll_template/lib2025-01-02_interface_config.so", RTLD_LAZY);
+            // if (!handle) {
+            //     fprintf(stderr, "Error: %s\n", dlerror());
+            //     return 1;
+            // }
+
+            // void (*my_function)();
+            // *(void **)(&my_function) = dlsym(handle, "main");
+            // char *error = dlerror();
+            // if (error != NULL) {
+            //     fprintf(stderr, "Error: %s\n", error);
+            //     dlclose(handle);
+            // }
+
+            // my_function();
+
+            // dlclose(handle);
+
 
 
         } else {

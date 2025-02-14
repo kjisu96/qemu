@@ -4808,6 +4808,14 @@ elif test "$debug" = "no"; then
   CFLAGS="-O2 $CFLAGS"
 fi
 
+
+##########################################
+# jskwon
+# library for dynamic linking
+LIBS="$LIBS -ldl"
+
+
+
 ##########################################
 # Do we have libnfs
 if test "$libnfs" != "no" ; then

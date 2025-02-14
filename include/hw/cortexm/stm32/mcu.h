@@ -39,6 +39,9 @@
 #include <hw/cortexm/stm32/i2c.h>
 // #include <hw/cortexm/stm32/ma.h>
 
+// #include <dlfcn.h>
+// #include <pthread.h>
+
 // ----------------------------------------------------------------------------
 
 #define TYPE_STM32_MCU "stm32-mcu"

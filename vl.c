@@ -317,6 +317,10 @@ static int default_sdcard = 1;
 static int default_vga = 1;
 static int default_net = 1;
 
+// jskwon
+// extern pthread_t gui_thread;
+
+
 static struct {
     const char *driver;
     int *flag;
@@ -5227,6 +5231,8 @@ int main(int argc, char **argv, char **envp)
 #endif
     monitor_cleanup();
     qemu_chr_cleanup();
+
+    // pthread_join(gui_thread, NULL);
 
     return 0;
 }
