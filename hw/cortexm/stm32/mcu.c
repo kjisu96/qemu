@@ -80,6 +80,13 @@ static void create_i2c(STM32MCUState *state, stm32_i2c_index_t index)
 {
     state->i2c[index] = DEVICE(stm32_i2c_create(state->container, index));
 }
+// Create children SPI nodes.
+// Public names are "/machine/stm32/SPI%d".
+static void create_spi(STM32MCUState *state, stm32_spi_index_t index)
+{
+    state->spi[index] = DEVICE(stm32_spi_create(state->container, index));
+}
+
 
 // Constructor for all STM32 devices, based on capabilities.
 //
@@ -419,12 +426,11 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
     // jskwon
 /*
     // MA; assume the presence in SVD is enough.
-    if (svd_has_named_peripheral(cm_state->svd_json, "I2C")) {
+    if (svd_has_named_peripheral(cm_state->svd_json, "MA")) {
         Object *ma = cm_object_new(state->container, "MA", TYPE_STM32_MA);
         // TYPE_STM32_ADC: stm32:adc-peripheral
 
         cm_object_realize(ma);
-
         state->ma = DEVICE(ma);
     }   
 */    
@@ -434,7 +440,11 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
             && svd_has_named_peripheral(cm_state->svd_json, "I2C1")) {
         create_i2c(state, STM32_PORT_I2C1);
     }
-
+    // SPI1
+    if (capabilities->has_spi1
+            && svd_has_named_peripheral(cm_state->svd_json, "SPI1")) {
+        create_spi(state, STM32_PORT_SPI1);
+}
 
 
 /*

@@ -37,6 +37,7 @@
 // jskwon
 #include <hw/cortexm/stm32/adc1.h>
 #include <hw/cortexm/stm32/i2c.h>
+#include <hw/cortexm/stm32/spi.h>
 // #include <hw/cortexm/stm32/ma.h>
 
 // #include <dlfcn.h>
@@ -106,8 +107,8 @@ typedef struct STM32MCUState {
     DeviceState *usart[STM32_MAX_USART];
 
     DeviceState *adc1;
-
     DeviceState *i2c[STM32_MAX_I2C];
+    DeviceState *spi[STM32_MAX_SPI];
 
 } STM32MCUState;
 
