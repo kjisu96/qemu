@@ -1389,6 +1389,7 @@ static void stm32f4_usart_dr_post_write_callback(Object *reg, Object *periph,
             ch = full_value; /* Use only the lower 8 bits */
             CharBackend backend = {.chr = state->chr};
             qemu_chr_fe_write_all(&backend, &ch, 1);
+            fprintf(stdout, "--> %c \n", ch);
         }
         // transmission is immediately complete
         peripheral_register_or_raw_value(state->reg.sr,

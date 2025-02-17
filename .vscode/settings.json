@@ -18,7 +18,8 @@
     "helper.h": "c",
     "peripheral.h": "c",
     "capabilities.h": "c",
-    "dlfcn.h": "c"
+    "dlfcn.h": "c",
+    "spi.h": "c"
   },
   "makefile.configureOnOpen": false
 } 

@@ -196,6 +196,8 @@ typedef struct {
 
 } STM32SPIState;
 
+Object* stm32_spi_create(Object *parent, stm32_spi_index_t index);
+
 // ----------------------------------------------------------------------------
 
 #endif /* STM32_SPI_H_ */

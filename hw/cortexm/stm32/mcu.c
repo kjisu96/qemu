@@ -444,7 +444,7 @@ static void stm32_mcu_realize_callback(DeviceState *dev, Error **errp)
     if (capabilities->has_spi1
             && svd_has_named_peripheral(cm_state->svd_json, "SPI1")) {
         create_spi(state, STM32_PORT_SPI1);
-}
+    }
 
 
 /*
