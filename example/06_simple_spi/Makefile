@@ -53,5 +53,8 @@ qemu:
 gdb:
 	./run_gdb.sh
 
+gdb_qemu:
+	./run_gdb_qemu.sh
+
 clean:
 	rm *.o *.d *.elf *.bin *.map

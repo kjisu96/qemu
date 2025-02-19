@@ -22,6 +22,7 @@
 #include <hw/cortexm/helper.h>
 #include <hw/cortexm/svd.h>
 
+
 // ----- Generated code -------------------------------------------------------
 //
 // ----- 8< ----- 8< -----  8< ----- 8< ----- 8< ----- 8< ----- 8< -----
@@ -170,6 +171,148 @@ static void stm32_spi_xxx_post_read_callback(Object *reg, Object *periph,
 
 // ----------------------------------------------------------------------------
 
+spi_fsm_t spi_fsm = ST_SPI_IDLE;
+
+
+static void stm32_spi_cr1_post_write_callback(Object *reg, Object *periph,
+    uint32_t addr, uint32_t offset, unsigned size,
+    peripheral_register_t value, peripheral_register_t full_value)
+{
+    STM32SPIState *state = STM32_SPI_STATE(periph);
+
+    peripheral_register_t prev_value = peripheral_register_get_raw_prev_value(reg);
+
+    int32_t cr1 = peripheral_register_get_raw_value(state->u.f4.reg.cr1);
+    puts("\n\n[DBG] stm32_spi_cr1_post_write_callback ");
+
+    // Enable SPI
+    usleep(SPI_SLEEP_uDELAY);
+    switch(spi_fsm) {
+        case ST_SPI_IDLE:
+            if ( (cr1 & SPI_CR1_SPE) != 0 ) {
+                printf("[INFO] SPI Enabled, CR1 = 0x%X \n", cr1);
+                printf("[INFO] Next state is ST_SPI_START \n");
+                spi_fsm = ST_SPI_START;
+            }
+            break;
+        default:
+            if ( (cr1 & SPI_CR1_SPE) == 0 ) {
+                printf("[INFO] SPI Disabled, CR1 = 0x%X \n", cr1);
+                printf("[INFO] Next state is ST_SPI_IDLE \n");
+                spi_fsm = ST_SPI_IDLE;
+            }            
+            break;
+    }        
+}
+
+static void stm32_spi_dr_post_write_callback(Object *reg, Object *periph,
+    uint32_t addr, uint32_t offset, unsigned size,
+    peripheral_register_t value, peripheral_register_t full_value)
+{
+    STM32SPIState *state = STM32_SPI_STATE(periph);
+
+    peripheral_register_t prev_value = peripheral_register_get_raw_prev_value(reg);
+
+    puts("\n\n[DBG] stm32_spi_dr_post_write_callback ");
+
+    // Enable SPI
+    usleep(SPI_SLEEP_uDELAY);
+    switch(spi_fsm) {
+        case ST_SPI_SELECT:
+        if( full_value != 0 ) {
+                printf("[INFO] SPI TX Data = 0x%X \n", full_value);
+                printf("[INFO] Next state is ST_SPI_TX \n");
+                spi_fsm = ST_SPI_TX;
+            }
+            break;
+        default:      
+            break;
+    }        
+}
+
+static void stm32_spi_sr_post_read_callback(Object *reg, Object *periph,
+    uint32_t addr, uint32_t offset, unsigned size)
+{
+    STM32SPIState *state = STM32_SPI_STATE(periph);
+
+    peripheral_register_t value = peripheral_register_get_raw_value(reg);
+
+    uint32_t sr;
+    puts("\n\n[DBG] stm32_spi_sr_post_read_callback ");
+
+    usleep(SPI_SLEEP_uDELAY);
+    switch( spi_fsm ) {
+        case ST_SPI_TX:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr, ~SPI_SR_TXE);       
+            sr = peripheral_register_get_raw_value(state->u.f4.reg.sr);
+            printf("[INFO] clear SPI_SR_TXE = 0x%08x \n", sr);
+
+            printf("[INFO] Next state is ST_SPI_RX \n");
+            spi_fsm = ST_SPI_RX;            
+            break;
+        case ST_SPI_RX:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr, ~SPI_SR_RXNE);       
+            sr = peripheral_register_get_raw_value(state->u.f4.reg.sr);
+            printf("[INFO] clear SPI_SR_RXNE = 0x%08x \n", sr);
+
+            printf("[INFO] Next state is ST_SPI_STOP \n");
+            spi_fsm = ST_SPI_STOP;                 
+            break;
+        case ST_SPI_STOP:
+            peripheral_register_and_raw_value(state->u.f4.reg.sr, ~SPI_SR_BSY);       
+            sr = peripheral_register_get_raw_value(state->u.f4.reg.sr);
+            printf("[INFO] clear SPI_SR_BSY = 0x%08x \n", sr);            
+            break;            
+        default:
+            break;
+    }
+}
+
+static peripheral_register_t stm32_spi_sr_pre_read_callback(Object *reg,
+    Object *periph, uint32_t addr, uint32_t offset, unsigned size)
+{
+    STM32SPIState *state = STM32_SPI_STATE(periph);
+
+    peripheral_register_t value = 0;
+
+    puts("\n\n[DBG] stm32_spi_sr_pre_read_callback ");
+    uint32_t dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+    uint32_t sr = peripheral_register_get_raw_value(state->u.f4.reg.sr);
+
+    usleep(SPI_SLEEP_uDELAY);
+    switch( spi_fsm ) {
+        case ST_SPI_SELECT:       
+            return sr | SPI_SR_BSY;
+        case ST_SPI_TX:
+            if( dr != 0 ) {
+                printf("[INFO] To be transmitted SPI_DR = 0x%0X \n", dr);
+                /*
+                Sensor API
+                -> setReg();
+                */ 
+                peripheral_register_and_raw_value(state->u.f4.reg.dr, 0);
+                dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+                printf("[INFO] clear SPI_DR = 0x%0X \n", dr);
+                return sr | SPI_SR_TXE;
+            }
+            return sr | SPI_SR_TXE;
+        case ST_SPI_RX:
+            /*
+                Sensor API
+                -> getReg();
+                peripheral_register_and_raw_value(state->u.f4.reg.dr, getReg());
+            */            
+            peripheral_register_or_raw_value(state->u.f4.reg.dr, 0xAB);  // TODO
+            dr = peripheral_register_get_raw_value(state->u.f4.reg.dr);
+            printf("[INFO] Received SPI_DR = 0x%0X \n", dr);
+            return sr | SPI_SR_RXNE;        
+        default:
+            break;
+    }
+
+    return sr;
+}
+
 // jskwon
 Object* stm32_spi_create(Object *parent, stm32_spi_index_t index)
 {
@@ -268,18 +411,20 @@ static void stm32_spi_realize_callback(DeviceState *dev, Error **errp)
             // cm_object_property_set_str(state->u.f4.fld.xxx.fff, "GGG", "follows");
             // cm_object_property_set_str(state->u.f4.fld.xxx.fff, "GGG", "cleared-by");
 
-            // TODO: add callbacks.
-            // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_spi_xxx_pre_read_callback);
-            // peripheral_register_set_post_read(state->f4.reg.xxx, &stm32_spi_xxx_post_read_callback);
-            // peripheral_register_set_pre_read(state->f4.reg.xxx, &stm32_spi_xxx_pret_read_callback);
-            // peripheral_register_set_post_write(state->f4.reg.xxx, &stm32_spi_xxx_post_write_callback);
+            peripheral_register_set_post_write(state->u.f4.reg.cr1, &stm32_spi_cr1_post_write_callback);
+            peripheral_register_set_post_write(state->u.f4.reg.dr, &stm32_spi_dr_post_write_callback);
+            // peripheral_register_set_post_read(state->u.f4.reg.dr, &stm32_spi_dr_post_read_callback);
+            peripheral_register_set_post_read(state->u.f4.reg.sr, &stm32_spi_sr_post_read_callback);
+            peripheral_register_set_pre_read(state->u.f4.reg.sr, &stm32_spi_sr_pre_read_callback);
+            // + GPIOE_ODR post_write callback
+
 
             // TODO: add interrupts.
 
-           // TODO: remove this if the peripheral is always enabled.
-           snprintf(enabling_bit_name, sizeof(enabling_bit_name) - 1,
-                DEVICE_PATH_STM32_RCC "/APB2ENR/SPI%dEN",
-                1 + state->port_index - STM32_PORT_SPI1);
+            // TODO: remove this if the peripheral is always enabled.
+            snprintf(enabling_bit_name, sizeof(enabling_bit_name) - 1,
+                    DEVICE_PATH_STM32_RCC "/APB2ENR/SPI%dEN",
+                    1 + state->port_index - STM32_PORT_SPI1);
 
 
         } else {

@@ -67,7 +67,7 @@ void clk(void)
  */
 void spi_write(uint8_t reg, uint8_t data)
 {
-    GPIOE->ODR &= ~(1U << 3); // enable
+    GPIOA->ODR &= ~(1U << 4); // enable
     // bit 15 is 0 for write for lis302dl
     uint32_t frame = 0;
     frame = data;
@@ -79,7 +79,7 @@ void spi_write(uint8_t reg, uint8_t data)
     // wait until rx buf is not empty (RXNE flag)
     while (!(SPI1->SR & (1 << 0)));
 
-    GPIOE->ODR |= (1 << 3); // disable
+    GPIOA->ODR |= (1 << 4); // disable
     (void)SPI1->DR; // dummy read
 }
 
@@ -88,7 +88,7 @@ void spi_write(uint8_t reg, uint8_t data)
  */
 uint8_t spi_read(uint8_t reg)
 {
-    GPIOE->ODR &= ~(1U << 3); // enable
+    GPIOA->ODR &= ~(1U << 4); // enable
     // bit 15 is 1 for read for lis302dl
     uint16_t frame = 0;
     frame |= (uint16_t)(reg << 8);
@@ -101,7 +101,7 @@ uint8_t spi_read(uint8_t reg)
     while (!(SPI1->SR & (1 << 0)));
 
     uint8_t b = (uint8_t)SPI1->DR;
-    GPIOE->ODR |= (1 << 3); // disable
+    GPIOA->ODR |= (1 << 4); // disable
     return b;
 }
 
@@ -119,9 +119,10 @@ void spi_init(void) {
     GPIOA->OSPEEDR |= 0x0000FC00; // Set pin 5/6/7 to very high speed mode (0b11)
 
     // choose AF5 for SPI1 in Alternate Function registers
-    GPIOA->AFR[0] |= (0x5 << 20); // for pin 5
-    GPIOA->AFR[0] |= (0x5 << 24); // for pin 6
-    GPIOA->AFR[0] |= (0x5 << 28); // for pin 7
+//    GPIOA->AFR[0] |= (0x5 << 16); // for pin 4 (NSS)
+    GPIOA->AFR[0] |= (0x5 << 20); // for pin 5 (SCK)
+    GPIOA->AFR[0] |= (0x5 << 24); // for pin 6 (MISO)
+    GPIOA->AFR[0] |= (0x5 << 28); // for pin 7 (MOSI)
 
     // Disable SPI1 and set the rest (no OR'ing)
 

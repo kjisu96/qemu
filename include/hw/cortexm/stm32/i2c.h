@@ -207,23 +207,22 @@ typedef struct {
 // jskwon
 Object* stm32_i2c_create(Object *parent, stm32_i2c_index_t index);
 
+//                       sec   msec   usec
+#define I2C_SLEEP_mDELAY 0.5 * 1000 * 1000
 
-typedef enum {
-    ST_IDLE,
-    ST_START,
-    ST_DEV_ADDR,
-    ST_REG_ADDR,
-    ST_WR_DATA,
-    ST_RD_DATA,
-    ST_STOP,
-    ST_NACK = 0xFF,
-} i2c_fsm_t;
+#define I2C_SR1_SB      (1 << 0)
+#define I2C_SR1_ADDR    (1 << 1)
+#define I2C_SR1_BTF     (1 << 2)
+#define I2C_SR1_ADD10   (1 << 3)
+#define I2C_SR1_STOPF   (1 << 4)
+#define I2C_SR1_RXNE    (1 << 6)
+#define I2C_SR1_TXE     (1 << 7)
 
-typedef enum {
-    OP_WRITE = 0,  
-    OP_READ = 1,
-} i2c_op_t;
+#define I2C_SR2_BUSY    (1 << 1)
 
+#define I2C_CR1_PE      (1 << 0)
+#define I2C_CR1_START   (1 << 8)
+#define I2C_CR1_STOP    (1 << 9)
 
 // ----------------------------------------------------------------------------
 

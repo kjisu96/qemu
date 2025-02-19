@@ -196,7 +196,26 @@ typedef struct {
 
 } STM32SPIState;
 
+// jskwon
 Object* stm32_spi_create(Object *parent, stm32_spi_index_t index);
+//                       sec   msec   usec
+#define SPI_SLEEP_uDELAY 0.5 * 1000 * 1000
+
+#define SPI_CR1_SPE      (1 << 6)
+
+#define SPI_SR_RXNE      (1 << 0)
+#define SPI_SR_TXE       (1 << 1)
+#define SPI_SR_BSY       (1 << 7)
+
+typedef enum {
+  ST_SPI_IDLE,
+  ST_SPI_START,
+  ST_SPI_SELECT,
+  ST_SPI_TX,
+  ST_SPI_RX,
+  ST_SPI_STOP,
+  ST_SPI_NACK = 0xFF,
+} spi_fsm_t;
 
 // ----------------------------------------------------------------------------
 

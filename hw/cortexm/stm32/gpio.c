@@ -27,6 +27,8 @@
 
 #include "qemu/bitops.h"
 
+#define GPIO_ODR_3      (1 << 3)
+
 /*
  * This file implements the STM32 GPIO device.
  *
@@ -2766,6 +2768,10 @@ static void stm32f1_gpio_update_dir_mask(STM32GPIOState *state, int index)
 
 // STM32F4[01][57]xx, STM32F4[23]xxx, STM32F411xx
 
+// jskwon
+#include <hw/cortexm/stm32/spi.h>
+extern spi_fsm_t spi_fsm;
+
 static uint32_t stm32f4_gpio_get_config_bits(uint32_t value, uint32_t bit);
 static void stm32f4_gpio_update_dir_mask(STM32GPIOState *state);
 
@@ -2792,6 +2798,32 @@ static void stm32f4_gpio_odr_post_write_callback(Object *reg, Object *periph,
     // 'value' may be have any size, use full_word.
     stm32_gpio_set_odr_irqs(state, prev_value, full_value);
     stm32_gpio_update_idr(state, state->reg.idr, full_value);
+
+    // jskwon
+    if( state->port_index == STM32_PORT_GPIOA ) {
+        fprintf(stdout, "\n\n[DBG] GPIO Port A ODR: 0x%X\n", full_value);
+
+        usleep(SPI_SLEEP_uDELAY);
+        switch( spi_fsm ) {
+            case ST_SPI_START:
+                if( (full_value & GPIO_ODR_3) == 0 ) {
+                    printf("[INFO] SPI slave select -> LOW \n");
+                    printf("[INFO] Next state is ST_SPI_SELECT \n");
+                    spi_fsm = ST_SPI_SELECT;
+                }
+                break;    
+            case ST_SPI_STOP:
+                if( (full_value & GPIO_ODR_3) != 1 ) {
+                    printf("[INFO] SPI slave select -> HIGH \n");
+                    printf("[INFO] Next state is ST_SPI_START \n");
+                    spi_fsm = ST_SPI_START;
+                }
+                break;                    
+            default:
+                break;
+        }
+    }
+
 }
 
 static void stm32f4_gpio_bsrr_post_write_callback(Object *reg, Object *periph,
